@@ -6,6 +6,8 @@ export interface CropImage {
   naturalWidth: number;
   naturalHeight: number;
   rotation: Rotation;
+  /** Which way a fixed-ratio crop faces on this image. */
+  orientation: Orientation;
   crop: CropRect;
   /** The user has adjusted this crop by hand. */
   edited: boolean;
@@ -51,7 +53,6 @@ export function rotatedSize(image: CropImage) {
 const images = ref<CropImage[]>([]);
 const currentId = ref<string | null>(null);
 const aspect = ref("original");
-const orientation = ref<Orientation>("auto");
 const exporting = ref(false);
 /** Number of files currently being opened or converted. */
 const importing = ref(0);
@@ -72,12 +73,18 @@ function ratioFor(image: CropImage): number | null {
     return width / height;
   }
 
-  const landscape =
-    orientation.value === "auto"
-      ? width >= height
-      : orientation.value === "landscape";
+  return isPortrait(image) ? 1 / preset.ratio : preset.ratio;
+}
 
-  return landscape ? preset.ratio : 1 / preset.ratio;
+/** Whether a fixed-ratio crop on this image is taller than it is wide. */
+export function isPortrait(image: CropImage) {
+  if (image.orientation === "auto") {
+    const { width, height } = rotatedSize(image);
+
+    return height > width;
+  }
+
+  return image.orientation === "portrait";
 }
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -150,6 +157,7 @@ export function useCropper() {
         loading: true,
         naturalHeight: 1,
         naturalWidth: 1,
+        orientation: "auto",
         originalName: file.name,
         rotation: 0,
         url: URL.createObjectURL(file),
@@ -209,6 +217,40 @@ export function useCropper() {
       360) as Rotation;
     image.crop = defaultCrop(image);
     image.edited = false;
+  }
+
+  /** Sets the open image's orientation and re-fits its crop. */
+  function setOrientation(value: Orientation) {
+    const image = currentImage.value;
+
+    if (!image || image.loading || image.error) {
+      return;
+    }
+
+    image.orientation = value;
+    image.crop = defaultCrop(image);
+    image.edited = false;
+  }
+
+  /** Flips the open image's crop between landscape and portrait. */
+  function flipOrientation() {
+    if (currentImage.value) {
+      setOrientation(isPortrait(currentImage.value) ? "landscape" : "portrait");
+    }
+  }
+
+  /**
+   * Picks an aspect ratio. Picking the one already active flips the open
+   * image's orientation instead.
+   */
+  function selectAspect(value: string) {
+    const preset = ASPECT_PRESETS.find((p) => p.value === value);
+
+    if (value === aspect.value && preset?.ratio && preset.ratio !== 1) {
+      flipOrientation();
+    } else {
+      aspect.value = value;
+    }
   }
 
   function remove(id: string) {
@@ -327,20 +369,23 @@ export function useCropper() {
     exporting,
     images,
     importing,
-    orientation,
+    flipOrientation,
+    orientation: computed(() => currentImage.value?.orientation ?? "auto"),
     prefix,
     remove,
     resetCrop,
     rotate,
     select,
+    selectAspect,
     setCrop,
+    setOrientation,
     step,
   };
 }
 
 // Changing the aspect ratio re-fits every crop the user hasn't adjusted by
 // hand, plus the one currently open.
-watch([aspect, orientation], () => {
+watch(aspect, () => {
   for (const image of images.value) {
     if (
       !image.error &&

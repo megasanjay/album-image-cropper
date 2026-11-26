@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const {
   addFiles,
-  aspect,
   clear,
   currentImage,
   currentIndex,
@@ -11,6 +10,8 @@ const {
   images,
   importing,
   orientation,
+  selectAspect,
+  setOrientation,
   prefix,
   remove,
   resetCrop,
@@ -28,7 +29,7 @@ const FORMATS = ["JPEG", "PNG", "HEIC", "WebP", "AVIF", "GIF"];
 
 const FEATURES = [
   {
-    body: "Square, 3:2, 4:3, 5:4, 7:5, 16:9 or free. Portrait, landscape, or matched to each photo.",
+    body: "Square, 3:2, 4:3, 5:4, 7:5, 16:9 or free. Set portrait or landscape per photo. Press the ratio again to flip it.",
     icon: "i-lucide-ratio",
     title: "Exact aspect ratios",
     tone: "bg-indigo-100 text-indigo-600",
@@ -256,13 +257,13 @@ function onKeydown(event: KeyboardEvent) {
   } else if (key === "arrowleft") {
     step(-1);
   } else if (preset) {
-    aspect.value = preset.value;
+    selectAspect(preset.value);
   } else if (key === "o") {
     const next =
       (ORIENTATION_CYCLE.indexOf(orientation.value) + 1) %
       ORIENTATION_CYCLE.length;
 
-    orientation.value = ORIENTATION_CYCLE[next]!;
+    setOrientation(ORIENTATION_CYCLE[next]!);
   } else if (key === "r") {
     resetCrop();
   } else if (key === "[") {

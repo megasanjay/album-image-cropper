@@ -4,8 +4,12 @@ const open = defineModel<boolean>("open", { default: false });
 /** Each entry is a list of key combos; each combo is a list of keys. */
 const SHORTCUTS: { combos: string[][]; label: string; joiner?: string }[] = [
   { combos: [["arrowleft"], ["arrowright"]], label: "Previous / next photo" },
-  { combos: [["1"], ["8"]], joiner: "-", label: "Aspect ratio" },
-  { combos: [["O"]], label: "Switch orientation" },
+  {
+    combos: [["1"], ["8"]],
+    joiner: "-",
+    label: "Aspect ratio (again to flip)",
+  },
+  { combos: [["O"]], label: "Switch this photo's orientation" },
   { combos: [["["], ["]"]], label: "Rotate left / right" },
   { combos: [["R"]], label: "Reset crop" },
   { combos: [["backspace"]], label: "Remove photo" },

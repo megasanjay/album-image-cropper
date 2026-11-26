@@ -24,25 +24,26 @@ are bundled with the app).
 - Crop overlay with rule-of-thirds grid, corner/edge handles, and drag-to-move
 - Click and drag anywhere outside the box to draw a new crop
 - Aspect ratios: Free, Original, Square, 3:2, 4:3, 5:4, 7:5, 16:9
-- Landscape / portrait / auto orientation for fixed ratios
+- Landscape / portrait / auto orientation for fixed ratios, set per photo.
+  Press the active ratio again to flip between landscape and portrait
 - Rotate 90° left or right
 - Exports at full resolution in the original format (JPEG, PNG, WebP; other
   formats are saved as PNG). Images you didn't change are included as-is.
 
 ### Keyboard shortcuts
 
-| Key              | Action              |
-| ---------------- | ------------------- |
-| `←` / `→`        | Previous / next     |
-| `1`–`8`          | Aspect ratio preset |
-| `O`              | Switch orientation  |
-| `[` / `]`        | Rotate left / right |
-| `R`              | Reset crop          |
-| `Backspace`      | Remove photo        |
-| `⌘/Ctrl O`       | Add photos          |
-| `⌘/Ctrl S`       | Download this photo |
-| `⌘/Ctrl Shift S` | Download all        |
-| `?`              | Show all shortcuts  |
+| Key              | Action                                    |
+| ---------------- | ----------------------------------------- |
+| `←` / `→`        | Previous / next                           |
+| `1`–`8`          | Aspect ratio preset (press again to flip) |
+| `O`              | Switch this photo's orientation           |
+| `[` / `]`        | Rotate left / right                       |
+| `R`              | Reset crop                                |
+| `Backspace`      | Remove photo                              |
+| `⌘/Ctrl O`       | Add photos                                |
+| `⌘/Ctrl S`       | Download this photo                       |
+| `⌘/Ctrl Shift S` | Download all                              |
+| `?`              | Show all shortcuts                        |
 
 ## Development
 

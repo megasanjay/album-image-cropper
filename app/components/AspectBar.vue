@@ -1,5 +1,13 @@
 <script setup lang="ts">
-const { aspect, currentImage, orientation, resetCrop, rotate } = useCropper();
+const {
+  aspect,
+  currentImage,
+  orientation,
+  resetCrop,
+  rotate,
+  selectAspect,
+  setOrientation,
+} = useCropper();
 
 const ORIENTATIONS: { value: Orientation; label: string; icon: string }[] = [
   {
@@ -8,7 +16,7 @@ const ORIENTATIONS: { value: Orientation; label: string; icon: string }[] = [
     value: "landscape",
   },
   { icon: "i-lucide-rectangle-vertical", label: "Portrait", value: "portrait" },
-  { icon: "i-lucide-wand-sparkles", label: "Match each photo", value: "auto" },
+  { icon: "i-lucide-wand-sparkles", label: "Match photo", value: "auto" },
 ];
 
 /** Largest side of the little ratio preview shape, in px. */
@@ -21,19 +29,9 @@ const editable = computed(
     !currentImage.value.error,
 );
 
-const portrait = computed(() => {
-  if (orientation.value === "portrait") {
-    return true;
-  }
-
-  if (orientation.value === "auto" && currentImage.value) {
-    const { width, height } = rotatedSize(currentImage.value);
-
-    return height > width;
-  }
-
-  return false;
-});
+const portrait = computed(
+  () => !!currentImage.value && isPortrait(currentImage.value),
+);
 
 const fixedRatio = computed(
   () => aspect.value !== "free" && aspect.value !== "original",
@@ -59,6 +57,10 @@ function presetTooltip(preset: AspectPreset) {
 
   if (preset.value === "original") {
     return "Original ratio";
+  }
+
+  if (preset.value === aspect.value && preset.ratio !== 1) {
+    return `${preset.label} ratio · press again to flip`;
   }
 
   return `${preset.label} ratio`;
@@ -125,7 +127,7 @@ function presetTooltip(preset: AspectPreset) {
               : 'text-muted hover:text-default'
           "
           :aria-checked="aspect === preset.value"
-          @click="aspect = preset.value"
+          @click="selectAspect(preset.value)"
         >
           <span class="grid size-5 place-items-center">
             <UIcon
@@ -158,7 +160,11 @@ function presetTooltip(preset: AspectPreset) {
       <UTooltip
         v-for="item in ORIENTATIONS"
         :key="item.value"
-        :text="fixedRatio ? item.label : `${item.label} (pick a ratio first)`"
+        :text="
+          fixedRatio
+            ? `${item.label} (this photo)`
+            : `${item.label} (pick a ratio first)`
+        "
         :kbds="['O']"
       >
         <button
@@ -173,7 +179,7 @@ function presetTooltip(preset: AspectPreset) {
           :disabled="!fixedRatio"
           :aria-label="item.label"
           :aria-checked="orientation === item.value"
-          @click="orientation = item.value"
+          @click="setOrientation(item.value)"
         >
           <UIcon :name="item.icon" class="size-5" />
         </button>
