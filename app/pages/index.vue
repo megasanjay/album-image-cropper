@@ -144,28 +144,61 @@ function onDrop(event: DragEvent) {
   handleFiles(event.dataTransfer?.files);
 }
 
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+
 async function onDownloadAll() {
   try {
-    await downloadAll();
+    await downloadAll((task, image) => {
+      toast.promise(task, {
+        error: (error) => ({
+          color: "error",
+          description: errorMessage(error),
+          icon: "i-lucide-circle-x",
+          title: `Couldn't export ${image.originalName}`,
+        }),
+        loading: { title: `Exporting ${image.originalName}...` },
+        success: (name) => ({
+          color: "success",
+          description: name,
+          icon: "i-lucide-check",
+          title: "Downloaded",
+        }),
+      });
+    });
   } catch (error) {
     toast.add({
       color: "error",
-      description: error instanceof Error ? error.message : String(error),
+      description: errorMessage(error),
       title: "Export failed",
     });
   }
 }
 
 async function onDownloadCurrent() {
-  try {
-    await downloadCurrent();
-  } catch (error) {
-    toast.add({
-      color: "error",
-      description: error instanceof Error ? error.message : String(error),
-      title: "Export failed",
-    });
+  const image = currentImage.value;
+
+  if (!image || image.loading) {
+    return;
   }
+
+  await toast
+    .promise(downloadCurrent(), {
+      error: (error) => ({
+        color: "error",
+        description: errorMessage(error),
+        icon: "i-lucide-circle-x",
+        title: `Couldn't export ${image.originalName}`,
+      }),
+      loading: { title: `Exporting ${image.originalName}...` },
+      success: (name) => ({
+        color: "success",
+        description: name,
+        icon: "i-lucide-check",
+        title: "Downloaded",
+      }),
+    })
+    .catch(() => {});
 }
 
 const ORIENTATION_CYCLE: Orientation[] = ["portrait", "landscape", "auto"];

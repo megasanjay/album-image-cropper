@@ -258,10 +258,22 @@ export function useCropper() {
       return;
     }
 
-    saveBlob(await render(image), prefix.value + croppedFileName(image.file));
+    const name = prefix.value + croppedFileName(image.file);
+
+    saveBlob(await render(image), name);
+
+    return name;
   }
 
-  async function downloadAll() {
+  /**
+   * Downloads every image one at a time. `onTask` receives a promise per
+   * image that resolves with the saved file name once its download (and the
+   * pause after it) is done, so the caller can report progress per file.
+   * A failed image doesn't stop the batch when `onTask` is given.
+   */
+  async function downloadAll(
+    onTask?: (task: Promise<string>, image: CropImage) => void,
+  ) {
     if (!images.value.length || exporting.value || importing.value) {
       return;
     }
@@ -272,7 +284,6 @@ export function useCropper() {
       const used = new Set<string>();
 
       for (const image of images.value) {
-        const blob = await render(image);
         const base = prefix.value + croppedFileName(image.file);
         let name = base;
 
@@ -282,9 +293,22 @@ export function useCropper() {
         }
 
         used.add(name);
-        saveBlob(blob, name);
-        // Browsers drop downloads that are fired too close together.
-        await wait(300);
+
+        const task = (async () => {
+          saveBlob(await render(image), name);
+          // Browsers drop downloads that are fired too close together.
+          await wait(300);
+
+          return name;
+        })();
+
+        if (!onTask) {
+          await task;
+          continue;
+        }
+
+        onTask(task, image);
+        await task.catch(() => wait(300));
       }
     } finally {
       exporting.value = false;
