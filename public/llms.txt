@@ -1,0 +1,16 @@
+# Album Cropper
+
+> A free, browser-only tool for cropping photos to an exact aspect ratio, one at a time or a whole album at once. Built as a replacement for the clunky image tools on macOS and Linux. It tracks nothing: images never leave the device, and there is no account, server, upload or analytics.
+
+## What it does
+
+- Open many photos at once (drag and drop or file picker) and crop each one with an overlay editor.
+- Aspect ratio presets: Free, Original, Square, 3:2, 4:3, 5:4, 7:5 and 16:9, each in portrait or landscape, or matched to each photo's own orientation.
+- Rotate in 90 degree steps and reset crops.
+- Download every cropped photo as separate files at full resolution with a configurable filename prefix (default `cropped-`).
+- Reads JPEG, PNG, WebP, AVIF and GIF natively. HEIC/HEIF is converted to JPEG in a Web Worker using libheif.
+- Keyboard driven: arrow keys move between photos, 1-8 pick a ratio, O switches orientation, [ and ] rotate, R resets, Cmd/Ctrl+S downloads, ? lists all shortcuts.
+
+## Privacy
+
+Everything runs client-side in the browser. No images, filenames or metadata are sent anywhere, there are no analytics or cookies, and the page loads nothing from third parties.

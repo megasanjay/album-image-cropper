@@ -1,0 +1,45 @@
+{
+  "name": "album-image-cropper",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "lint:js": "eslint .",
+    "lint:prettier": "prettier --check .",
+    "lint": "pnpm lint:js && pnpm lint:prettier",
+    "lint:fix": "prettier --write --list-different . && pnpm lint:js --fix",
+    "postinstall": "nuxt prepare",
+    "reset": "rimraf node_modules && rimraf .nuxt && rimraf .output && rimraf dist && pnpm install",
+    "l-reset": "rm -rf node_modules && rm -rf .nuxt && rm -rf .output && rm -rf dist && pnpm install",
+    "prune-branches": "git removed-branches --prune --force"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "1.2.157",
+    "@nuxt/eslint": "1.17.0",
+    "@nuxt/ui": "4.13.0",
+    "@nuxtjs/eslint-config-typescript": "12.1.0",
+    "@stylistic/eslint-plugin": "6.0.1",
+    "@typescript-eslint/parser": "8.73.0",
+    "eslint": "10.15.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-perfectionist": "5.14.0",
+    "eslint-plugin-prettier": "5.5.7",
+    "eslint-plugin-unused-imports": "4.4.1",
+    "eslint-plugin-vue": "10.12.1",
+    "nuxt": "4.6.4",
+    "prettier": "3.10.1",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "rimraf": "6.1.4",
+    "sharp": "0.34.3",
+    "tailwindcss": "4.3.5",
+    "typescript": "6.0.3",
+    "typescript-vue-tsc": "npm:typescript@5.9.3",
+    "vue": "latest"
+  },
+  "dependencies": {
+    "libheif-js": "1.23.5"
+  }
+}
